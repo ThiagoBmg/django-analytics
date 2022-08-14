@@ -3,6 +3,7 @@ import "https://cdn.jsdelivr.net/npm/chart.js";
 class AnalyticsCore {
   constructor(config = DASHBOARD_CONTEXT) {
     this.dashboard_config = this.validate(config);
+    this.dashboard_backgroundColor = config.backgroundColor;
     this.available_charts = this.get_available_charts();
     this.available_cards = this.get_available_cards();
     this.available_titles = this.get_available_titles();
@@ -221,11 +222,12 @@ class AnalyticsCore {
     return config;
   }
 
-  render(context, interval = 1000) {
+  render(context, backgroundColor = this.dashboard_backgroundColor, interval = 1000) {
     // responsável por adicionar um contexto criado ao html
     // e então renderizar os gráficos gerados e guardados dentro do contexto
     //
     // @param context: contem todos os elementos já tratados que devem ser renderizados na página
+    // @param style: pode ser utilizado para passar estilos dinamicos para o dashboard
     // @param interval: representa o delay entre adicionar o template html e criar os dashboards com charts.js
     //
     // utilizamos o metodo de interval pois notamos um comportamento estranho por parte do charts.js
@@ -236,6 +238,13 @@ class AnalyticsCore {
     var containerObj = document.createElement("div");
     containerObj.setAttribute("class", "container");
 
+    // set dashboard style
+    if (backgroundColor) {
+      var bkgColorCss = "background-color: " + backgroundColor + " !important;";
+      containerObj.setAttribute("style", bkgColorCss);
+    }
+
+    // hide container to build the dashboard and show later
     $("myDashboard").toggle();
 
     context.forEach((element) => {

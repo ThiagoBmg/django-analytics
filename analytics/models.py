@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 import json
 import logging
 from uuid import uuid4
@@ -26,6 +27,7 @@ from analytics.config import (
     DEFAULT_API_BODY,
     QUERY_DEFAULT,
 )
+from colorfield.fields import ColorField
 
 log = logging.getLogger("analytics")
 
@@ -45,6 +47,7 @@ class Dashboard(models.Model):
         null=False,
         blank=False,
     )
+    backgroundColor = ColorField(default='#FFFFFF',)
     dataset = models.OneToOneField(
         to="Dataset",
         related_name="dashboardDataset",
@@ -212,6 +215,7 @@ class Dashboard(models.Model):
             context = {
                 "dashboardContext": {
                     "dashboardName": self.name,
+                    "backgroundColor": self.backgroundColor,
                     "context": figures,
                 }
             }

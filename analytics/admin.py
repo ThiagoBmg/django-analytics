@@ -8,11 +8,11 @@ from analytics.adminUtils import (
     ApiCAllInline,
     DatasetInline,
     FiguresInline,
-    DashboardFilter, 
+    DashboardFilter,
     QueryInline,
 )
 
- 
+
 log = logging.getLogger("analytics")
 
 
@@ -64,10 +64,7 @@ class DashboardAdmin(nested_admin.NestedModelAdmin, admin.ModelAdmin):
             {
                 "description": "Informações gerais sobre esta movimentação",
                 "fields": (
-                    "dashboard_id",
-                    "name",
-                    "usersAllowed",
-                    "image",
+                    ("name", "dashboard_id",), ("usersAllowed",  "backgroundColor",),
                 ),
                 "classes": ("collapse",),
             },
