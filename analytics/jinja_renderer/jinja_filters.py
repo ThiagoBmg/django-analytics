@@ -22,7 +22,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from unidecode import unidecode
 
 from django.db.models.manager import Manager
-from rest_framework.authtoken.models import Token
 
 logger = logging.getLogger("analytics")
 
@@ -790,16 +789,6 @@ def check_substrings(string: str, *args):
         if not re.search(sub, string):
             return False
     return True
-
-
-def check_token(token: str, manager: Manager = Token.objects) -> bool:
-    """Check if Django REST framework token is valid."""
-
-    try:
-        manager.get(key=token)
-        return True
-    except BaseException:
-        return False
 
 
 def get_gradient_color_pallete(
