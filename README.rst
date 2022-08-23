@@ -19,3 +19,9 @@ Quick start
 3. Run ``python manage.py migrate`` to create the analytics models. 
 
 4. Run ``python manage.py collectstatics`` to collect the statics files. 
+
+
+Dashboard Data Processing
+==========================
+
+    python manage.py data_processing

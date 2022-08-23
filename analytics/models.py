@@ -81,7 +81,7 @@ class Dashboard(models.Model):
     # MANAGERS
     objects = models.Manager()
 
-    def process_query(self, request) -> list:
+    def process_query(self, request=None) -> list:
         # responsável por processar as consultas sql de um dashboard
         new_dataset = list()
         try:
@@ -93,7 +93,7 @@ class Dashboard(models.Model):
 
             # validando se não existem querys
             if not querys:
-                log.warning(
+                log.info(
                     f"[analytics] {self.name} -> Lista vazia. nenhuma query para ser processada."
                 )
                 return False
@@ -109,10 +109,11 @@ class Dashboard(models.Model):
                 )
                 #  processando a query
                 data = query.run(request=request)
-                messages.success(
-                    request,
-                    f"Consulta Sql {query.key}  processada com sucesso",
-                )
+                if request:
+                    messages.success(
+                        request,
+                        f"Consulta Sql {query.key}  processada com sucesso",
+                    )
                 #  guardando o resultado
                 new_dataset.append(data)
 
@@ -131,12 +132,13 @@ class Dashboard(models.Model):
             log.error(
                 f"[analytics] {self.name} -> Erro ao processar Consulta Sql {exc}."
             )
-            messages.error(
-                request,
-                f"Erro ao processar Consulta Sql {self.name} | {exc}",
-            )
+            if request:
+                messages.error(
+                    request,
+                    f"Erro ao processar Consulta Sql {self.name} | {exc}",
+                )
 
-    def process_apiCall(self, request) -> list:
+    def process_apiCall(self, request=None) -> list:
         #  responsável por processar apicalls de um dashboard
         new_dataset = list()
         try:
@@ -147,7 +149,7 @@ class Dashboard(models.Model):
             apiCalls = ApiCall.objects.filter(dashboard=self.id)
 
             if not apiCalls:
-                log.warning(
+                log.info(
                     f"[analytics] {self.name} -> Lista vazia. nenhuma Api Call para ser processada."
                 )
                 return False
@@ -184,10 +186,11 @@ class Dashboard(models.Model):
             log.error(
                 f"[analytics] {self.name} -> Erro ao processar ApiCall {exc}."
             )
-            messages.error(
-                request,
-                f"Erro ao processar Api Calls {self.name} | {exc}",
-            )
+            if request:
+                messages.error(
+                    request,
+                    f"Erro ao processar Api Calls {self.name} | {exc}",
+                )
 
     def create_context(self, request) -> dict:
         # buscando as figuras do dashboard
@@ -398,15 +401,16 @@ class Query(models.Model):
                     connection._rollback()
                     raise Exception(exc)
 
-    def run(self, request):
+    def run(self, request=None):
         try:
             result = self.run_django_sql(self.query, self.database)
             return {self.key: result}
         except Exception as exc:
-            messages.error(
-                request,
-                f"Consulta Sql {self.key} {self.query} falhou ao ser processada {exc}",
-            )
+            if request:
+                messages.error(
+                    request,
+                    f"Consulta Sql {self.key} {self.query} falhou ao ser processada {exc}",
+                )
             log.error(
                 f"[analytics] {self.dashboard.name} -> Consulta Sql [{self.key}] {self.query} falhou ao ser processada {exc}"
             )
@@ -476,20 +480,21 @@ class ApiCall(models.Model):
         verbose_name_plural = "Consultas HTTP"
 
     @staticmethod
-    def process_response(request, response, url):
-        if response.status_code in [200, 201]:
-            messages.success(
-                request,
-                f"Api Call {url} processada com um retorno positivo",
-            )
-        else:
-            messages.warning(
-                request,
-                f"Api Call {url} processada com um retorno {response.status_code} - {response.json()}",
-            )
+    def process_response(response, url, request=None):
+        if request:
+            if response.status_code in [200, 201]:
+                messages.success(
+                    request,
+                    f"Api Call {url} processada com um retorno positivo",
+                )
+            else:
+                messages.warning(
+                    request,
+                    f"Api Call {url} processada com um retorno {response.status_code} - {response.json()}",
+                )
         return response.status_code, response.json()
 
-    def run(self, request):
+    def run(self, request=None):
         try:
             session = Session()
 
