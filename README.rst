@@ -24,4 +24,4 @@ Quick start
 Dashboard Data Processing
 ==========================
 
-    python manage.py data_processing
+``python manage.py data_processing``

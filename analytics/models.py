@@ -31,6 +31,8 @@ from colorfield.fields import ColorField
 
 log = logging.getLogger("analytics")
 
+class JinjaRender(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False, verbose_name="ID")
 
 class Dashboard(models.Model):
     id = models.UUIDField(

@@ -3,17 +3,51 @@ import nested_admin
 from django.contrib import admin, messages
 from django.shortcuts import HttpResponseRedirect
 from django.utils.html import format_html
-from analytics.models import Dashboard, Figure, ApiCall, Dataset, Query
+from analytics.models import Dashboard, Figure, ApiCall, Dataset, Query, JinjaRender
 from analytics.adminUtils import (
     ApiCAllInline,
     DatasetInline,
     FiguresInline,
     DashboardFilter,
     QueryInline,
+
 )
 
 
 log = logging.getLogger("analytics")
+
+
+@admin.register(JinjaRender)
+class JinjaRenderModelAdmin(admin.ModelAdmin):
+    # class Media:
+    # css = {
+    #     'all': ['lumiaDiagram/css/html.css']
+    # }
+    # js = ['lumiaDiagram/js/html.js',
+    #       'lumiaDiagram/js/joint.js',
+    #       'lumiaDiagram/js/joint.shapes.html.js',
+    #       'lumiaDiagram/js/graph_function.js']
+
+    model = JinjaRender
+    change_list_template = "jinja_render.html"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        dashboards = Dashboard.objects.filter(usersAllowed=request.user)
+        _dashboards = list()
+        if dashboards:
+            _dashboards = [{"id": str(dashboard.id), "name": dashboard.name}
+                           for dashboard in dashboards]
+
+        return super().changelist_view(request, extra_context={"dashboards": _dashboards, })
 
 
 @admin.register(Dataset)
