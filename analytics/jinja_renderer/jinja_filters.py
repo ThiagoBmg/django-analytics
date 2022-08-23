@@ -815,3 +815,27 @@ def get_pandas_distinct_count(data: list, key: str, sort=False) -> list:
         return {"labels": headers, "values": values, "length": len(headers)}
     except BaseException as exc:
         return f"{exc}"
+    
+def get_pandas_sum_value_per_group(data:list,field1:str,field2:str,):
+    try:
+        #  criando dataframe
+        dt = pd.DataFrame(data)
+        keys = dt.keys().to_list()
+        
+        # validando se existem os campos passados como parâmetro
+        if not field1 in keys: raise BaseException("invalid index")
+        if not field2 in keys: raise BaseException("invalid index")
+        
+        uniq = [x for x in dt[field1].value_counts().to_dict()]
+        
+        return [
+            {
+                "name":x,
+                "value":dt.loc[dt[field1] == x,field2].sum()
+            }
+            for x in uniq
+        ]
+    except BaseException as exc: 
+        return f"{exc}"
+    
+    
