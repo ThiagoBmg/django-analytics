@@ -53,6 +53,10 @@ class JinjaRenderModelAdmin(admin.ModelAdmin):
 @admin.register(Dataset)
 class DatasetAdmin(admin.ModelAdmin):
     readonly_fields = ("data",)
+    list_display = [
+        "dashboard",
+        "update_at",
+    ]
     list_filter = [
         DashboardFilter,
     ]

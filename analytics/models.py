@@ -32,7 +32,9 @@ from colorfield.fields import ColorField
 log = logging.getLogger("analytics")
 
 class JinjaRender(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False, verbose_name="ID")
+    id = models.UUIDField(primary_key=True, default=uuid4,
+                          editable=False, verbose_name="ID")
+
 
 class Dashboard(models.Model):
     id = models.UUIDField(
@@ -626,18 +628,20 @@ class Figure(models.Model):
 
     def create_context(self, dataset):
         try:
+            jinja_template =render_jinja_template(
+                        self.eventJinja, {"dataset": dataset.data}
+                    ).strip().replace("'", '"')
             return {
                 "type": self.type,
                 "title": self.title,
                 "config": json.loads(
-                    render_jinja_template(
-                        self.eventJinja, {"dataset": dataset.data}
-                    )
-                    .strip()
-                    .replace("'", '"')
+                    jinja_template
                 ),
             }
         except Exception as exc:
+            try:
+                log.error(f"[analytics] Erro ao processar o contexto de um visual {self.type} com o contexto {jinja_template}")
+            except:...
             return {"type": self.type, "error": str(exc)}
 
     def save(self, *args, **kwargs):
