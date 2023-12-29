@@ -19,15 +19,6 @@ log = logging.getLogger("analytics")
 
 @admin.register(JinjaRender)
 class JinjaRenderModelAdmin(admin.ModelAdmin):
-    # class Media:
-    # css = {
-    #     'all': ['lumiaDiagram/css/html.css']
-    # }
-    # js = ['lumiaDiagram/js/html.js',
-    #       'lumiaDiagram/js/joint.js',
-    #       'lumiaDiagram/js/joint.shapes.html.js',
-    #       'lumiaDiagram/js/graph_function.js']
-
     model = JinjaRender
     change_list_template = "jinja_render.html"
 
